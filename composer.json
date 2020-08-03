@@ -1,7 +1,6 @@
 {
   "name": "fmarangi/oxid-ff-category-feed",
   "description": "FACT-Finder Category Feed for Oxid",
-  "version": "1.0.0",
   "license": "MIT",
   "authors": [
     {
