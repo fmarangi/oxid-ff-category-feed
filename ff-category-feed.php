@@ -34,7 +34,9 @@ function getCategories(int $shopID): iterable
     $categories->setLoadLevel(2);
     $categories->load();
     $categories->setAdminMode(true);
-    return $categories->getArray();
+    return array_filter($categories->getArray(), function (Category $category) use ($shopID) {
+        return $category->getShopId() === $shopID;
+    });
 }
 
 function title(?Category $category): string
