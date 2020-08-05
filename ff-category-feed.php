@@ -2,8 +2,8 @@
 <?php declare(strict_types=1);
 
 $options = getopt('s:');
-$shopID  = $options['s'] ?? 0;
-if (!$shopID) {
+$shopId  = $options['s'] ?? 0;
+if (!$shopId) {
     throw new RuntimeException('Please specify the shop ID using the "s" parameter!');
 }
 
@@ -20,23 +20,22 @@ use Omikron\FactFinder\Oxid\Model\Config\FtpParams;
 use Omikron\FactFinder\Oxid\Model\Export\FtpClient;
 use OxidEsales\Eshop\Application\Model\Category;
 use OxidEsales\Eshop\Application\Model\CategoryList;
+use OxidEsales\Eshop\Core\Config;
+use OxidEsales\Eshop\Core\Registry;
 
 /**
- * @param $shopID
+ * @param int $shopId
  *
  * @return Category[]
  */
-function getCategories(int $shopID): iterable
+function getCategories(): iterable
 {
     $categories = oxNew(CategoryList::class);
     $categories->setAdminMode(false);
-    $categories->setShopID($shopID);
     $categories->setLoadLevel(2);
     $categories->load();
     $categories->setAdminMode(true);
-    return array_filter($categories->getArray(), function (Category $category) use ($shopID) {
-        return $category->getShopId() === $shopID;
-    });
+    return $categories->getArray();
 }
 
 function title(?Category $category): string
@@ -44,13 +43,16 @@ function title(?Category $category): string
     return $category ? $category->oxcategories__oxtitle->rawValue : '';
 }
 
-$ftpUploader = new FtpClient(new FtpParams());
-$pushImport  = new PushImport(new ClientFactory());
-
 try {
+    Registry::getConfig()->setShopId($shopId);
+    Registry::set(Config::class, null);
+
+    $ftpUploader = new FtpClient(new FtpParams());
+    $pushImport  = new PushImport(new ClientFactory());
+
     $handle = fopen('php://temp', 'w+');
     fputcsv($handle, ['Name', 'ParentCategory', 'URL'], ';');
-    foreach (getCategories((int) $shopID) as $category) {
+    foreach (getCategories() as $category) {
         fputcsv($handle, [
             title($category),
             title($category->getParentCategory()),
@@ -59,7 +61,7 @@ try {
     }
 
     rewind($handle);
-    $ftpUploader->upload($handle, sprintf('categories_%d.csv', $shopID));
+    $ftpUploader->upload($handle, sprintf('categories_%d.csv', $shopId));
     $pushImport->execute();
 } finally {
     fclose($handle);
