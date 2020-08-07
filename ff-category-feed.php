@@ -24,8 +24,6 @@ use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\Registry;
 
 /**
- * @param int $shopId
- *
  * @return Category[]
  */
 function getCategories(): iterable
@@ -61,7 +59,7 @@ try {
     }
 
     rewind($handle);
-    $ftpUploader->upload($handle, sprintf('categories_%d.csv', $shopId));
+    $ftpUploader->upload($handle, sprintf('categories.%s.csv', Registry::getConfig()->getConfigParam('ffChannel')));
     $pushImport->execute();
 } finally {
     fclose($handle);
