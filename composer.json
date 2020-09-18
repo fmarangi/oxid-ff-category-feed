@@ -12,6 +12,6 @@
   "require": {
     "php": "^7.1",
     "ext-ftp": "*",
-    "omikron/oxid-factfinder": "*"
+    "omikron/oxid-factfinder": "^1.0"
   }
 }

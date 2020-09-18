@@ -1,11 +1,12 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-$options = getopt('s:');
+$options = getopt('s:l:');
 $shopId  = $options['s'] ?? 0;
 if (!$shopId) {
     throw new RuntimeException('Please specify the shop ID using the "s" parameter!');
 }
+$languageId = (int) ($options['l'] ?? 0);
 
 require_once __DIR__ . '/../../../source/bootstrap.php';
 
@@ -41,9 +42,16 @@ function title(?Category $category): string
     return $category ? $category->oxcategories__oxtitle->rawValue : '';
 }
 
+function getChannel(int $languageId): string
+{
+    $languageCode = Registry::getLang()->getLanguageAbbr($languageId);
+    return Registry::getConfig()->getConfigParam('ffChannel')[$languageCode];
+}
+
 try {
     Registry::getConfig()->setShopId($shopId);
     Registry::set(Config::class, null);
+    Registry::getLang()->setBaseLanguage($languageId);
 
     $ftpUploader = new FtpClient(new FtpParams());
     $pushImport  = new PushImport(new ClientFactory());
@@ -59,7 +67,7 @@ try {
     }
 
     rewind($handle);
-    $ftpUploader->upload($handle, sprintf('categories.%s.csv', Registry::getConfig()->getConfigParam('ffChannel')));
+    $ftpUploader->upload($handle, sprintf('categories.%s.csv', getChannel($languageId)));
     $pushImport->execute();
 } finally {
     fclose($handle);
