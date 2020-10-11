@@ -15,7 +15,6 @@ ini_set('display_errors', 'On');
 
 define('OX_IS_ADMIN', true);
 
-use Omikron\FactFinder\Oxid\Model\Api\ClientFactory;
 use Omikron\FactFinder\Oxid\Model\Api\PushImport;
 use Omikron\FactFinder\Oxid\Model\Config\FtpParams;
 use Omikron\FactFinder\Oxid\Model\Export\FtpClient;
@@ -53,8 +52,8 @@ try {
     Registry::set(Config::class, null);
     Registry::getLang()->setBaseLanguage($languageId);
 
-    $ftpUploader = new FtpClient(new FtpParams());
-    $pushImport  = new PushImport(new ClientFactory());
+    $ftpUploader = oxNew(FtpClient::class, oxNew(FtpParams::class));
+    $pushImport  = oxNew(PushImport::class);
 
     $handle = fopen('php://temp', 'w+');
     fputcsv($handle, ['Name', 'ParentCategory', 'URL'], ';');
