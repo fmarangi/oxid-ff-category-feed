@@ -56,11 +56,12 @@ try {
     $pushImport  = oxNew(PushImport::class);
 
     $handle = fopen('php://temp', 'w+');
-    fputcsv($handle, ['Name', 'ParentCategory', 'URL'], ';');
+    fputcsv($handle, ['Name', 'parentCategory', 'sourceField', 'URL'], ';');
     foreach (getCategories() as $category) {
         fputcsv($handle, [
             title($category),
             title($category->getParentCategory()),
+            'CategoryPath',
             $category->getLink(),
         ], ';');
     }
