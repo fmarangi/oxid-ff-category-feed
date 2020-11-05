@@ -1,6 +1,7 @@
 {
   "name": "fmarangi/oxid-ff-category-feed",
   "description": "FACT-Finder Category Feed for Oxid",
+  "type": "composer-plugin",
   "license": "MIT",
   "authors": [
     {
@@ -8,10 +9,20 @@
       "email": "francesco.marangi@omikron.net"
     }
   ],
-  "bin": "ff-category-feed.php",
+  "autoload": {
+    "psr-4": {
+      "Fmarangi\\Oxid\\CategoryFeed\\": "src/"
+    }
+  },
   "require": {
     "php": "^7.1",
-    "ext-ftp": "*",
+    "composer-plugin-api": "^1.1",
     "omikron/oxid-factfinder": "*"
+  },
+  "require-dev": {
+    "composer/composer": "^2.0"
+  },
+  "extra": {
+    "class": "Fmarangi\\Oxid\\CategoryFeed\\Plugin"
   }
 }

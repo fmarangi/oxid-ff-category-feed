@@ -12,4 +12,4 @@ Require it from your Oxid installation:
     
 Export your categories:
 
-    vendor/bin/oxid-ff-categories.php -s <shopID>
+    composer factfinder:export:categories --lang <langId> -- <shopID>
